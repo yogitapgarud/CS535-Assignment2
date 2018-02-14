@@ -1,5 +1,5 @@
 """
-INSERT YOUR NAME HERE
+Yogita Garud
 """
 
 
@@ -8,7 +8,7 @@ from __future__ import print_function
 
 import sys
 
-import cPickle
+import _pickle as cPickle
 import numpy as np
 
 # This is a class for a LinearTransform layer which takes an input 
@@ -16,15 +16,15 @@ import numpy as np
 class LinearTransform(object):
 
     def __init__(self, W, b):
-	# DEFINE __init function
+        W = W.transpose()
 
     def forward(self, x):
-	# DEFINE forward function
+	l = np.dot(W, self.x + b)
 
     def backward(
         self, 
         grad_output, 
-        learning_rate=0.0, 
+        learning_rate=0.5, 
         momentum=0.0, 
         l2_penalty=0.0,
     ):
@@ -36,6 +36,7 @@ class ReLU(object):
 
     def forward(self, x):
 	# DEFINE forward function
+        z2 = max(x, 0)
 
     def backward(
         self, 
@@ -51,7 +52,8 @@ class ReLU(object):
 # this is put into a single layer is because it has a simple gradient form
 class SigmoidCrossEntropy(object):
 	def forward(self, x):
-		# DEFINE forward function
+            sigmoid(z)
+
 	def backward(
 	    self, 
 	    grad_output, 
@@ -62,12 +64,16 @@ class SigmoidCrossEntropy(object):
 		# DEFINE backward function
 # ADD other operations and data entries in SigmoidCrossEntropy if needed
 
+        def sigmoid(z):
+            return 1/(1 + numpy.exp(-z)) 
 
 # This is a class for the Multilayer perceptron
 class MLP(object):
 
     def __init__(self, input_dims, hidden_units):
     # INSERT CODE for initializing the network
+        W = np.random.rand(input_dims, hidden_units)
+        b = np.random.rand(hidden_units, 1)
 
     def train(
         self, 
@@ -93,11 +99,14 @@ if __name__ == '__main__':
     test_y = data['test_labels']
 	
     num_examples, input_dims = train_x.shape
+    hidden_units = 2 * input_dims[1]
 	# INSERT YOUR CODE HERE
 	# YOU CAN CHANGE num_epochs AND num_batches TO YOUR DESIRED VALUES
 	num_epochs = 10
 	num_batches = 1000
     mlp = MLP(input_dims, hidden_units)
+
+    train_loss = 0
 
     for epoch in xrange(num_epochs):
 
