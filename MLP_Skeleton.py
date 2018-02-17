@@ -16,10 +16,12 @@ import numpy as np
 class LinearTransform(object):
 
     def __init__(self, W, b):
-        self.W = W.transpose()
+        self.W = W
 
     def forward(self, x):
-        l = x.dot(self.W)
+        w_transpose = np.transpose(self.W)
+        l = np.dot(x, w_transpose())
+
         return l
 
     def backward(
@@ -52,16 +54,17 @@ class ReLU(object):
     # DEFINE backward function
 # ADD other operations in ReLU if needed
 
+    def gradRelu(x):
+        x[x>0] = 1
+        return x
+
 # This is a class for a sigmoid layer followed by a cross entropy layer, the reason 
 # this is put into a single layer is because it has a simple gradient form
 class SigmoidCrossEntropy(object):
 
-        def __init__(self, w):
-            self.w = w
-
 	def forward(self, x):
-            z = np.dot(x, self.w)
-            return sigmoid(z)
+            
+            return sigmoid(x)
 
 	def backward(
             self, 
@@ -88,7 +91,7 @@ class MLP(object):
     def __init__(self, input_dims, hidden_units):
     # INSERT CODE for initializing the network
         self.W1 = np.random.rand(hidden_units, input_dims)
-        self.W2 = np.random.rand(hidden_units, 1)
+        self.W2 = np.random.rand(1, hidden_units)
         self.momentumw1 = np.zeros(hidden_units, input_dims)
         self.momentumw2 = np.zeros(hidden_units, 1)
 
@@ -101,15 +104,27 @@ class MLP(object):
         l2_penalty,
     ):
 	# INSERT CODE for training the network
-        lt = LinearTransform(self.W1)
+        lt1 = LinearTransform(self.W1)
+        lt2 = LinearTransform(self.W2)
         relu = ReLU()
-        sig = SigmoidCrossEntropy(self.W2)
-        z1 = lt.forward(X)
+        op = SigmoidCrossEntropy(self.W2)
+
+        z1 = lt1.forward(x_batch)
         a1 = relu.forward(z1)
-        z2 = sig.forward(a1)
+        z2 = lt2.forward(a1)
+        a2 = op.forward(z2)
         
-        dw1 = dz2 * da1 * dz1 * dw1
-        dw2 = dz2 * dw2
+        half1 = np.dot(np.subtract([1], a2), y_batch)
+        half2 = np.dot(a2, np.subtract([1], y_batch))
+        da2 = np.add(half1, half2)
+
+        grad_relu = relu.gradrelu(z1)
+
+        w1half2 = np.dot(np.transpose(grad_relu), x_batch)
+        w1half1 = np.dot(da2, self.W2)
+        dw1 = np.dot(w1half1, w2half2)
+
+        dw2 = np.dot(np.transpose(da2), a1)
 
         loss = np.dot(y_batch, np.log(z2)) + np.dot((1-y), np.log(1-z2))
         print "loss: ", loss.shape()
