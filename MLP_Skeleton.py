@@ -50,7 +50,7 @@ class ReLU(object):
         momentum=0.0, 
         l2_penalty=0.0,
     ):
-        self.w = 
+        self.w = w
     # DEFINE backward function
 # ADD other operations in ReLU if needed
 
@@ -72,9 +72,9 @@ class SigmoidCrossEntropy(object):
             learning_rate=0.0,
             momentum=0.0,
             l2_penalty=0.0
-	):
+        ):
 
-	    self.w = u * mlp.momentumw1 - learning_rate * dw1                                             
+            self.w = u * mlp.momentumw1 - learning_rate * dw1                                             
             #mlp.momentumw2 = u * mlp.momentumw2 - learning_rate * dw2
 
             mlp.W1 = mlp.W1 + mlp.momentumw1
@@ -82,7 +82,7 @@ class SigmoidCrossEntropy(object):
 
 # ADD other operations and data entries in SigmoidCrossEntropy if needed
 
-        def sigmoid(z):
+	def sigmoid(z):
             return 1/(1 + np.exp(-z)) 
 
 # This is a class for the Multilayer perceptron
@@ -124,7 +124,7 @@ class MLP(object):
         dw2 = np.dot(np.transpose(da2dz2), a1)
 
         loss = np.dot(y_batch, np.log(z2)) + np.dot((1-y), np.log(1-z2))
-        print "loss: ", loss.shape()
+        print("loss: ", loss.shape())
 
         self.W2 = sig.backward(dw2)
         self.W1 = relu.backward(dw1)
@@ -132,6 +132,7 @@ class MLP(object):
         return dw1, dw2, loss
 
     def evaluate(self, x, y):
+        z = x.y
 	# INSERT CODE for testing the network
 # ADD other operations and data entries in MLP if needed
 
@@ -154,9 +155,8 @@ if __name__ == '__main__':
 
     train_loss = 0
     total_loss = 0
-    batch_size = num_examples / num_batches
-    u = 0.6
-    
+    batch_size = num_examples/num_batches
+
     for epoch in xrange(num_epochs):
 
 	# INSERT YOUR CODE FOR EACH EPOCH HERE
@@ -164,30 +164,29 @@ if __name__ == '__main__':
 
         for b in xrange(num_batches):
       	    total_loss = 0.0
-			# INSERT YOUR CODE FOR EACH MINI_BATCH HERE
-			# MAKE SURE TO UPDATE total_loss
-            batch_size = num_examples/num_batches
-            i = b * batch_size
+# INSERT YOUR CODE FOR EACH MINI_BATCH HERE
+# MAKE SURE TO UPDATE total_loss
+      	    i = b * batch_size
 
-            dw1 , dw2 = mlp.train(x[i:i+batch_size,:],y[i:i+batch_size], learning_rate, momentumw1, momentumw2, penalty)
+      	    dw1 , dw2 = mlp.train(x[i:i+batch_size,:],y[i:i+batch_size], learning_rate, momentumw1, momentumw2, penalty)
                         
             #mlp.momentumw1 = u * mlp.momentumw1 - learning_rate * dw1                                             
             #mlp.momentumw2 = u * mlp.momentumw2 - learning_rate * dw2
 
-            mlp.W1 = mlp.W1 + mlp.momentumw1
-            mlp.W2 = mlp.W2 + mlp.momentumw2
+            #mlp.W1 = mlp.W1 + mlp.momentumw1
+            #mlp.W2 = mlp.W2 + mlp.momentumw2
 
-            print(
-                '\r[Epoch {}, mb {}]    Avg.Loss = {:.3f}'.format(
+      	    print(
+               '\r[Epoch {}, mb {}]    Avg.Loss = {:.3f}'.format(
                     epoch + 1,
                     b + 1,
                     total_loss,
                 ),
                 end='',
             )
-            sys.stdout.flush()
-		# INSERT YOUR CODE AFTER ALL MINI_BATCHES HERE
-		# MAKE SURE TO COMPUTE train_loss, train_accuracy, test_loss, test_accuracy
+      	    sys.stdout.flush()
+# INSERT YOUR CODE AFTER ALL MINI_BATCHES HERE
+# MAKE SURE TO COMPUTE train_loss, train_accuracy, test_loss, test_accuracy
         print()
         print('    Train Loss: {:.3f}    Train Acc.: {:.2f}%'.format(
             train_loss,
