@@ -29,7 +29,7 @@ class LinearTransform(object):
         momentum=0.0, 
         l2_penalty=0.0,
     ):
-        return X
+        self.x = x
 	# DEFINE backward function
 # ADD other operations in LinearTransform if needed
 
@@ -48,7 +48,7 @@ class ReLU(object):
         momentum=0.0, 
         l2_penalty=0.0,
     ):
-        
+        self.w = 
     # DEFINE backward function
 # ADD other operations in ReLU if needed
 
@@ -71,7 +71,12 @@ class SigmoidCrossEntropy(object):
             l2_penalty=0.0
 	):
 
-		# DEFINE backward function
+	    self.w = u * mlp.momentumw1 - learning_rate * dw1                                             
+            #mlp.momentumw2 = u * mlp.momentumw2 - learning_rate * dw2
+
+            mlp.W1 = mlp.W1 + mlp.momentumw1
+            mlp.W2 = mlp.W2 + mlp.momentumw2
+
 # ADD other operations and data entries in SigmoidCrossEntropy if needed
 
         def sigmoid(z):
@@ -103,11 +108,15 @@ class MLP(object):
         a1 = relu.forward(z1)
         z2 = sig.forward(a1)
         
-        dw1 = sig.backward() * relu.backward() * lt.backward()
-        dw2 = sig.backward()
+        dw1 = dz2 * da1 * dz1 * dw1
+        dw2 = dz2 * dw2
 
         loss = np.dot(y_batch, np.log(z2)) + np.dot((1-y), np.log(1-z2))
         print "loss: ", loss.shape()
+
+        self.W2 = sig.backward(dw2)
+        self.W1 = relu.backward(dw1)
+
         return dw1, dw2, loss
 
     def evaluate(self, x, y):
@@ -150,8 +159,8 @@ if __name__ == '__main__':
 
             dw1 , dw2 = mlp.train(x[i:i+batch_size,:],y[i:i+batch_size], learning_rate, momentumw1, momentumw2, penalty)
                         
-            mlp.momentumw1 = u * mlp.momentumw1 - learning_rate * dw1                                             
-            mlp.momentumw2 = u * mlp.momentumw2 - learning_rate * dw2
+            #mlp.momentumw1 = u * mlp.momentumw1 - learning_rate * dw1                                             
+            #mlp.momentumw2 = u * mlp.momentumw2 - learning_rate * dw2
 
             mlp.W1 = mlp.W1 + mlp.momentumw1
             mlp.W2 = mlp.W2 + mlp.momentumw2
