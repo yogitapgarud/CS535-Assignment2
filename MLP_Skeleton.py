@@ -31,7 +31,7 @@ class LinearTransform(object):
         momentum=0.0, 
         l2_penalty=0.0,
     ):
-        self.x = x
+        self.W = self.W - np.dot(learning_rate, grad_output)
 	# DEFINE backward function
 # ADD other operations in LinearTransform if needed
 
@@ -114,17 +114,14 @@ class MLP(object):
         z2 = lt2.forward(a1)
         a2 = op.forward(z2)
         
-        half1 = np.dot(np.subtract([1], a2), y_batch)
-        half2 = np.dot(a2, np.subtract([1], y_batch))
-        da2 = np.add(half1, half2)
+        da2dz2 = np.subtract(y_batch, a2)
 
-        grad_relu = relu.gradrelu(z1)
-
-        w1half2 = np.dot(np.transpose(grad_relu), x_batch)
-        w1half1 = np.dot(da2, self.W2)
-        dw1 = np.dot(w1half1, w2half2)
-
-        dw2 = np.dot(np.transpose(da2), a1)
+        da1 = self.W2
+        dz1 = relu.gradrelu(z1)
+        
+        dw1 = np.dot(da2dz2, np.dot(da1, np.dot(dz1, x_batch)))
+        
+        dw2 = np.dot(np.transpose(da2dz2), a1)
 
         loss = np.dot(y_batch, np.log(z2)) + np.dot((1-y), np.log(1-z2))
         print "loss: ", loss.shape()
